@@ -209,7 +209,7 @@
             this.listBox2.FormattingEnabled = true;
             this.listBox2.Location = new System.Drawing.Point(12, 12);
             this.listBox2.Name = "listBox2";
-            this.listBox2.Size = new System.Drawing.Size(343, 82);
+            this.listBox2.Size = new System.Drawing.Size(479, 82);
             this.listBox2.TabIndex = 14;
             // 
             // groupBox1
@@ -275,9 +275,9 @@
             // listBox3
             // 
             this.listBox3.FormattingEnabled = true;
-            this.listBox3.Location = new System.Drawing.Point(365, 12);
+            this.listBox3.Location = new System.Drawing.Point(497, 12);
             this.listBox3.Name = "listBox3";
-            this.listBox3.Size = new System.Drawing.Size(205, 82);
+            this.listBox3.Size = new System.Drawing.Size(73, 82);
             this.listBox3.TabIndex = 17;
             // 
             // button7

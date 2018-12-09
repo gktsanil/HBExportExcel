@@ -61,7 +61,9 @@ namespace HBExportExcel
             //   "INNER JOIN product_pictures AS pp " +
             //   "ON pa.idProduct = pp.idProduct " +
             //   "WHERE pa.amountImage != '' LIMIT 5", dataGridView1);
-            mysql.FillDatatable("SELECT * FROM hb_listings", dataGridView1);
+            //mysql.FillDatatable("SELECT * FROM hb_listings", dataGridView1);
+            mysql.FillDatatable("SELECT * FROM hb_listings WHERE categoryId=132 OR categoryId=207",dataGridView1);
+            MessageBox.Show(dataGridView1.Rows.Count.ToString());
         }
 
         private string GetWhere()
@@ -139,7 +141,39 @@ namespace HBExportExcel
                         //}
                         foreach (ExcellList item in excellLists)
                         {
-                            string query = "INSERT INTO [" + listBox1.SelectedItem.ToString() + "](Temel, NoName, NoName1, NoName3, NoName4, NoName5, NoName6, NoName7, NoName8, NoName9, NoName10, NoName11, NoName12, Varyant, NoName13) VALUES('" + item.ProductName.ToString() + "', '" + item.MerchantSku.ToString() + "', '" + item.Barcode.ToString() + "', '" + StripHTML(item.ProductDescriptiom) + "', '" + item.BrandName.ToString() + "', '" + item.Desi.ToString() + "', '" + item.Vax.ToString() + "', '" + item.Waranty.ToString() + "', '" + item.Img1.ToString() + "', '" + item.Img2.ToString() + "', '" + item.Img3.ToString() + "', '" + item.Img4.ToString() + "', '" + item.Img5.ToString() + "', 'Color', '" + item.CompModel.ToString() + "' );";
+                            string query = "INSERT INTO [" + listBox1.SelectedItem.ToString() + "](" +
+                                "Temel, " +
+                                "NoName, " +
+                                "NoName1, " +
+                                "NoName3, " +
+                                "NoName4, " +
+                                "NoName5, " +
+                                "NoName6, " +
+                                "NoName7, " +
+                                "NoName8, " +
+                                "NoName9, " +
+                                "NoName10, " +
+                                "NoName11, " +
+                                "NoName12, " +
+                                "Varyant, " +
+                                "NoName13" +
+                                ") VALUES(" +
+                                "'" + item.ProductName.ToString() + "', " +
+                                "'" + item.MerchantSku.ToString() + "', " +
+                                "'" + item.Barcode.ToString() + "', " +
+                                "'" + StripHTML(item.ProductDescriptiom.ToString()) + "', " +
+                                "'" + item.BrandName.ToString() + "', " +
+                                "'" + item.Desi.ToString() + "', " +
+                                "'" + item.Vax.ToString() + "', " +
+                                "'" + item.Waranty.ToString() + "', " +
+                                "'" + item.Img1.ToString() + "', " +
+                                "'" + item.Img2.ToString() + "', " +
+                                "'" + item.Img3.ToString() + "', " +
+                                "'" + item.Img4.ToString() + "', " +
+                                "'" + item.Img5.ToString() + "', " +
+                                "'', " +
+                                "'" + item.CompModel.ToString() + "'" +
+                                " );";
                             Console.WriteLine(query);
                             cmd.CommandText = query;
                             cmd.ExecuteNonQuery();
@@ -164,7 +198,23 @@ namespace HBExportExcel
         {
             //input = Regex.Replace(input, "<.*?>", String.Empty);
             //input = Regex.Replace(input, "'", String.Empty);
-            return Regex.Replace(input, "<.*?>", String.Empty);
+            //string veri = "";
+
+            //for (int i = 0; i < 10; i++)
+            //{
+            //    veri += Regex.Replace(input, "<.*?>", String.Empty).Split(' ')[i];
+            //}
+            //return Regex.Replace(input, "<.*?>", String.Empty).Substring(0,40);
+            //return input.Replace("\"", "&#34;");
+
+            if (input.Length<255)
+            {
+                return input;
+            }
+            else
+            {
+                return input.Substring(0, 255);
+            }
         }
 
         class ExcellList
@@ -237,22 +287,22 @@ namespace HBExportExcel
                 //    MessageBox.Show(cell.Value.ToString());
                 //}
                 ExcellList exList = new ExcellList();
-                MessageBox.Show(row.Cells[0].Value.ToString());
-                exList.ProductName = ProductNameFix(row.Cells[0].Value.ToString());
-                exList.MerchantSku = row.Cells[2].Value.ToString() + "-" + row.Cells[3].Value.ToString();
-                exList.CompModel = getBrandModel(row.Cells[1].Value.ToString().Split(',')[0]);
+                //MessageBox.Show(row.Cells[0].Value.ToString());
+                exList.ProductName = ProductNameFix(row.Cells[1].Value.ToString());
+                exList.MerchantSku = row.Cells[2].Value.ToString(); //+ "-" + row.Cells[3].Value.ToString();
+                exList.CompModel = row.Cells[18].Value.ToString();//getBrandModel(row.Cells[1].Value.ToString().Split(',')[0]);
                 exList.Barcode = row.Cells[3].Value.ToString();
-                exList.ProductDescriptiom = row.Cells[4].Value.ToString();
-                exList.BrandName = BrandNameFix(row.Cells[1].Value.ToString().Split(',').Last());//brandTxt.Text.ToString();
-                exList.Desi = Convert.ToInt32(desiTxt.Text);
-                exList.Vax = Convert.ToInt32(taxNum.Value);
-                exList.Waranty = Convert.ToInt32(warantyNum.Value);
-                exList.Img1 = "https://cdn.akilliphone.com/8004/1500x1500" + row.Cells[6].Value.ToString().Replace("img/", "/");
-                exList.Img2 = "https://cdn.akilliphone.com/8004/1500x1500" + row.Cells[5].Value.ToString().Replace("img/", "/");
-                exList.Img3 = "https://cdn.akilliphone.com/8004/1500x1500" + row.Cells[5].Value.ToString().Replace("img/", "/");
-                exList.Img4 = "https://cdn.akilliphone.com/8004/1500x1500" + row.Cells[5].Value.ToString().Replace("img/", "/");
-                exList.Img5 = "https://cdn.akilliphone.com/8004/1500x1500" + row.Cells[5].Value.ToString().Replace("img/", "/");
-                exList.Color = row.Cells[5].Value.ToString();
+                exList.ProductDescriptiom = row.Cells[7].Value.ToString();
+                exList.BrandName = row.Cells[8].Value.ToString();//BrandNameFix(row.Cells[1].Value.ToString().Split(',').Last());//brandTxt.Text.ToString();
+                exList.Desi = Convert.ToInt32(row.Cells[9].Value);//Convert.ToInt32(desiTxt.Text);
+                exList.Vax = Convert.ToInt32(row.Cells[10].Value);//taxNum.Value);
+                exList.Waranty = Convert.ToInt32(row.Cells[11].Value);//warantyNum.Value);
+                exList.Img1 = "https://cdn.akilliphone.com/8004/1500x1500" + row.Cells[12].Value.ToString().Replace("img/", "/");
+                exList.Img2 = "https://cdn.akilliphone.com/8004/1500x1500" + row.Cells[13].Value.ToString().Replace("img/", "/");
+                exList.Img3 = "https://cdn.akilliphone.com/8004/1500x1500" + row.Cells[14].Value.ToString().Replace("img/", "/");
+                exList.Img4 = "https://cdn.akilliphone.com/8004/1500x1500" + row.Cells[15].Value.ToString().Replace("img/", "/");
+                exList.Img5 = "https://cdn.akilliphone.com/8004/1500x1500" + row.Cells[16].Value.ToString().Replace("img/", "/");
+                exList.Color = row.Cells[17].Value.ToString();
 
                 excellLists.Add(exList);
                 Console.WriteLine(excellLists.Count);
@@ -271,6 +321,8 @@ namespace HBExportExcel
                 Console.WriteLine(item.Img3.ToString());
                 Console.WriteLine(item.MerchantSku.ToString());
             }
+
+            Console.WriteLine("bitti");
         }
 
         private string BrandNameFix(String brand)
@@ -338,17 +390,25 @@ namespace HBExportExcel
         private void button9_Click(object sender, EventArgs e)
         {
             progressBar1.Value = 0;
-            mysql.FillDatatable("SELECT p.id,p.brands,pa.amountImage FROM product AS p INNER JOIN product_amount AS pa ON pa.idProduct = p.id", dataGridView1);
+            //mysql.FillDatatable("SELECT p.id,p.brands,pa.amountImage FROM product AS p INNER JOIN product_amount AS pa ON pa.idProduct = p.id WHERE pa.amountImage!=''", dataGridView1);
+            //mysql.FillDatatable("SELECT hb.productName,hb.productId AS hbID,pc.idProduct AS pcID,pc.idCategory FROM product_categories AS pc INNER JOIN hb_listings AS hb ON hb.productId = pc.idProduct WHERE hb.img1!='' AND (pc.idCategory=132 OR pc.idCategory=207)", dataGridView1);
+            //mysql.FillDatatable("SELECT * FROM hb_listings WHERE categoryId=207 OR categoryId = 132",dataGridView1);
+            mysql.FillDatatable("SELECT hb.productName,hb.productId, pp.idProduct,pp.picture FROM hb_listings AS hb INNER JOIN product_pictures AS pp ON hb.productId = pp.idProduct WHERE (hb.categoryId=132 OR hb.categoryId=207)", dataGridView1);
+
             Thread.Sleep(2000);
             progressBar1.Maximum = dataGridView1.Rows.Count;
             foreach (DataGridViewRow item in dataGridView1.Rows)
             {
                 progressBar1.Value++;
-                Console.WriteLine(getBrandModel(item.Cells[1].Value.ToString().Split(',')[0]));
+                //Console.WriteLine(getBrandModel(item.Cells[1].Value.ToString().Split(',')[0]));
+                //Console.WriteLine(item.Cells[2].Value.ToString());
                 //Console.WriteLine(item.Cells[1].Value.ToString().Split(',')[0]);
-                mysql.UpdateData("UPDATE hb_listings SET compModel = '" + getBrandModel(item.Cells[1].Value.ToString().Split(',')[0]) + "', img1 = '" + item.Cells[2].Value.ToString() + "' WHERE productId = " + item.Cells[0].Value.ToString());
+                string queries = "UPDATE hb_listings SET img3 = '" + item.Cells[3].Value.ToString() + "' WHERE productId = " + item.Cells[1].Value.ToString();
+                //Console.WriteLine(queries);
+                mysql.UpdateData(queries);
                 Thread.Sleep(5);
             }
+            MessageBox.Show(dataGridView1.Rows.Count.ToString());
         }
     }
 }
