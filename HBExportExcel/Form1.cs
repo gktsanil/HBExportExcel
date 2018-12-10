@@ -62,7 +62,7 @@ namespace HBExportExcel
             //   "ON pa.idProduct = pp.idProduct " +
             //   "WHERE pa.amountImage != '' LIMIT 5", dataGridView1);
             //mysql.FillDatatable("SELECT * FROM hb_listings", dataGridView1);
-            mysql.FillDatatable("SELECT * FROM hb_listings WHERE categoryId=132 OR categoryId=207",dataGridView1);
+            mysql.FillDatatable("SELECT * FROM hb_listings WHERE img1!='' AND categoryId='" + numericUpDown1.Value.ToString() + "'",dataGridView1);
             MessageBox.Show(dataGridView1.Rows.Count.ToString());
         }
 
@@ -196,7 +196,7 @@ namespace HBExportExcel
 
         public string StripHTML(string input)
         {
-            //input = Regex.Replace(input, "<.*?>", String.Empty);
+            input = Regex.Replace(input, "<.*?>", String.Empty);
             //input = Regex.Replace(input, "'", String.Empty);
             //string veri = "";
 
@@ -289,14 +289,14 @@ namespace HBExportExcel
                 ExcellList exList = new ExcellList();
                 //MessageBox.Show(row.Cells[0].Value.ToString());
                 exList.ProductName = ProductNameFix(row.Cells[1].Value.ToString());
-                exList.MerchantSku = row.Cells[2].Value.ToString(); //+ "-" + row.Cells[3].Value.ToString();
-                exList.CompModel = row.Cells[18].Value.ToString();//getBrandModel(row.Cells[1].Value.ToString().Split(',')[0]);
+                exList.MerchantSku = row.Cells[5].Value.ToString() + "-" + row.Cells[3].Value.ToString(); //+ "-" + row.Cells[3].Value.ToString();
+                exList.CompModel = getBrandModel(row.Cells[18].Value.ToString());//getBrandModel(row.Cells[1].Value.ToString().Split(',')[0]);
                 exList.Barcode = row.Cells[3].Value.ToString();
-                exList.ProductDescriptiom = row.Cells[7].Value.ToString();
-                exList.BrandName = row.Cells[8].Value.ToString();//BrandNameFix(row.Cells[1].Value.ToString().Split(',').Last());//brandTxt.Text.ToString();
-                exList.Desi = Convert.ToInt32(row.Cells[9].Value);//Convert.ToInt32(desiTxt.Text);
-                exList.Vax = Convert.ToInt32(row.Cells[10].Value);//taxNum.Value);
-                exList.Waranty = Convert.ToInt32(row.Cells[11].Value);//warantyNum.Value);
+                exList.ProductDescriptiom = StripHTML(row.Cells[7].Value.ToString());
+                exList.BrandName = BrandNameFix(row.Cells[8].Value.ToString());//BrandNameFix(row.Cells[1].Value.ToString().Split(',').Last());//brandTxt.Text.ToString();
+                exList.Desi = Convert.ToInt32(desiTxt.Text.ToString());//Convert.ToInt32(desiTxt.Text);
+                exList.Vax = Convert.ToInt32(taxNum.Value.ToString());//taxNum.Value);
+                exList.Waranty = Convert.ToInt32(warantyNum.Value.ToString());//warantyNum.Value);
                 exList.Img1 = "https://cdn.akilliphone.com/8004/1500x1500" + row.Cells[12].Value.ToString().Replace("img/", "/");
                 exList.Img2 = "https://cdn.akilliphone.com/8004/1500x1500" + row.Cells[13].Value.ToString().Replace("img/", "/");
                 exList.Img3 = "https://cdn.akilliphone.com/8004/1500x1500" + row.Cells[14].Value.ToString().Replace("img/", "/");
@@ -377,6 +377,18 @@ namespace HBExportExcel
             }
         }
 
+        private string getColor(string id)
+        {
+            if (id == "0" || id == "")
+            {
+                return "RZ";
+            }
+            else
+            {
+                return mysql.SelectQuery("SELECT brandName FROM brands WHERE id=" + id);
+            }
+        }
+
         private void button7_Click(object sender, EventArgs e)
         {
             listBox3.Items.Add(textBox1.Text.ToString());
@@ -393,20 +405,36 @@ namespace HBExportExcel
             //mysql.FillDatatable("SELECT p.id,p.brands,pa.amountImage FROM product AS p INNER JOIN product_amount AS pa ON pa.idProduct = p.id WHERE pa.amountImage!=''", dataGridView1);
             //mysql.FillDatatable("SELECT hb.productName,hb.productId AS hbID,pc.idProduct AS pcID,pc.idCategory FROM product_categories AS pc INNER JOIN hb_listings AS hb ON hb.productId = pc.idProduct WHERE hb.img1!='' AND (pc.idCategory=132 OR pc.idCategory=207)", dataGridView1);
             //mysql.FillDatatable("SELECT * FROM hb_listings WHERE categoryId=207 OR categoryId = 132",dataGridView1);
-            mysql.FillDatatable("SELECT hb.productName,hb.productId, pp.idProduct,pp.picture FROM hb_listings AS hb INNER JOIN product_pictures AS pp ON hb.productId = pp.idProduct WHERE (hb.categoryId=132 OR hb.categoryId=207)", dataGridView1);
-
+            //mysql.FillDatatable("SELECT hb.productName,hb.productId, pp.idProduct,pp.picture FROM hb_listings AS hb INNER JOIN product_pictures AS pp ON hb.productId = pp.idProduct WHERE (hb.categoryId=132 OR hb.categoryId=207)", dataGridView1);
+            // mysql.FillDatatable("SELECT id,productCode,productName,productDescription,brands,idProductCategory FROM product WHERE idProductCategory = 207 ",dataGridView1);
+            //mysql.FillDatatable("SELECT hb.id,hb.productId,pa.barcode,pa.amountImage FROM hb_listings AS hb INNER JOIN product_amount AS pa ON hb.productId = pa.idProduct", dataGridView1);
+            //mysql.FillDatatable("SELECT idx,idProduct,idColor,productCode,barcode,amountImage FROM product_amount WHERE amountImage!=''", dataGridView1);
+            //mysql.FillDatatable("SELECT idx,idProduct,idColor,barcode,amountImage FROM product_amount", dataGridView1);
+            //mysql.FillDatatable("SELECT id,productName,productDescription,productCode,brands,idProductCategory FROM product",dataGridView1);
+            //mysql.FillDatatable("SELECT hb.barcode,hb.productCode,pc.idProduct,pc.idCategory FROM hb_listings AS hb INNER JOIN product_categories AS pc WHERE hb.productId=pc.idProduct", dataGridView1);
+            //mysql.FillDatatable("SELECT * FROM product_categories WHERE idCategory=132",dataGridView1);
+            mysql.FillDatatable("SELECT * FROM product_categories WHERE idCategory=156",dataGridView1);
             Thread.Sleep(2000);
             progressBar1.Maximum = dataGridView1.Rows.Count;
             foreach (DataGridViewRow item in dataGridView1.Rows)
             {
+                //BrandNameFix(row.Cells[1].Value.ToString().Split(',').Last()); getBrandModel(row.Cells[1].Value.ToString().Split(',')[0]);
                 progressBar1.Value++;
                 //Console.WriteLine(getBrandModel(item.Cells[1].Value.ToString().Split(',')[0]));
                 //Console.WriteLine(item.Cells[2].Value.ToString());
                 //Console.WriteLine(item.Cells[1].Value.ToString().Split(',')[0]);
-                string queries = "UPDATE hb_listings SET img3 = '" + item.Cells[3].Value.ToString() + "' WHERE productId = " + item.Cells[1].Value.ToString();
-                //Console.WriteLine(queries);
+                //string queries = "UPDATE hb_listings SET barcode='" + item.Cells[2].Value.ToString() + "',img1='" + item.Cells[3].Value.ToString() + "' WHERE id='" + item.Cells[0].Value.ToString() + "'";
+                //string queries = "INSERT INTO hb_listings(productId,productCode,productName,productDescription,categoryId) VALUES('" + item.Cells[0].Value.ToString() + "','" + item.Cells[1].Value.ToString() + "','" + item.Cells[2].Value.ToString() + "','" + item.Cells[3].Value.ToString() + "','" + item.Cells[5].Value.ToString() + "')";
+                //string queries = "INSERT INTO hb_listings(amountId,productId,productCode,color,barcode,img1) VALUES('" + item.Cells[0].Value.ToString() + "','" + item.Cells[1].Value.ToString() + "','" + item.Cells[3].Value.ToString() + "','" + item.Cells[2].Value.ToString() + "','" + item.Cells[4].Value.ToString() + "','" + item.Cells[5].Value.ToString() + "')";
+                //string queries = "UPDATE hb_listings SET productName='" + item.Cells[1].Value.ToString() + "',productCode='" + item.Cells[3].Value.ToString() + "',productDescription='" + item.Cells[2].Value.ToString() + "' WHERE productId = '" + item.Cells[0].Value.ToString() + "'";
+                //string queries = "INSERT INTO hb_listings(barcode,amountId,productId,img1,color) VALUES('" + item.Cells[3].Value.ToString() + "','" + item.Cells[0].Value.ToString() + "','" + item.Cells[1].Value.ToString() + "','" + item.Cells[4].Value.ToString() + "','" + item.Cells[2].Value.ToString() + "')";
+                //string queries = "UPDATE hb_listings SET ";
+                string queries = "UPDATE hb_listings SET categoryId = '" + item.Cells[2].Value.ToString() + "' WHERE productId='" + item.Cells[1].Value.ToString() + "'";
+                //string queries = "UPDATE hb_listings SET brand = '" + item.Cells[1].Value.ToString().Split(',').Last() + "', compModel = '" + item.Cells[1].Value.ToString().Split(',')[0] + "' WHERE productId='" + item.Cells[0].Value.ToString() + "' AND categoryId = 132";
+                Console.WriteLine(queries);
                 mysql.UpdateData(queries);
-                Thread.Sleep(5);
+                //mysql.InsertData(queries);
+                Thread.Sleep(2);
             }
             MessageBox.Show(dataGridView1.Rows.Count.ToString());
         }
